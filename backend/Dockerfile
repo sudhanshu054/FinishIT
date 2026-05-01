@@ -1,14 +1,15 @@
-# Use official Java runtime
 FROM eclipse-temurin:17-jdk-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy jar file (make sure you build it first)
-COPY target/*.jar app.jar
+# Install Maven
+RUN apk add --no-cache maven
 
-# Expose port (Render uses 10000 by default, but we map dynamically)
-EXPOSE 8080
+# Copy full backend source
+COPY . .
 
-# Run the application
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Build the project inside container
+RUN mvn clean package -DskipTests
+
+# Run the jar
+CMD ["java","-jar","target/*.jar"]
